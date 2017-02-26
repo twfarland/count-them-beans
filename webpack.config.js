@@ -4,7 +4,7 @@ module.exports = {
         "js/GCounterWorker.js": "./src/GCounterWorker.ts"
     },
     output: {
-        path: "public/",
+        path: "docs/",
         filename: "[name]"
     },
     resolve: {

@@ -1,6 +1,7 @@
 # Count them beans
 
-By Tim Farland <twfarland@gmail.com>. Displays use of a GCounter CDRT, web workers, signals, and virtual dom.
+By Tim Farland <twfarland@gmail.com>. 
+Displays use of a GCounter conflict-free replicated data type (CRDT), web workers, signals, and virtual dom.
 
 ### Required
 
@@ -11,7 +12,7 @@ By Tim Farland <twfarland@gmail.com>. Displays use of a GCounter CDRT, web worke
     npm install
     npm run dev
 
-To get workers to run, serve the `public` folder, e.g. with `cd public; python -m SimpleHTTPServer`.
+To get workers to run, serve the `docs` folder, e.g. with `cd docs; python -m SimpleHTTPServer`.
 You can use the shortcut `npm run serve` for this.
 
 ### Build

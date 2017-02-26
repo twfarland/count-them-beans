@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "webpack --watch -d",
     "build": "webpack -p",
-    "serve": "cd public; python -m SimpleHTTPServer"
+    "serve": "cd docs; python -m SimpleHTTPServer"
   },
   "main": "index.js",
   "license": "MIT"
