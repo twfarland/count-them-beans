@@ -1,5 +1,5 @@
 import { VDom } from 'sprezzatura'
-import { GCounterCluster, GCounterWorker, increment } from './GCounterMain'
+import { GCounterCluster, GCounterWorker, increment, spawn } from './GCounterMain'
 import { mapObject, set } from './utils'
 import './view.css'
 
@@ -22,6 +22,7 @@ function CounterView ({ key, total, emitting }: GCounterWorker): VDom {
 export function AppView (cluster: GCounterCluster): VDom {
     return [Div, { 'class': 'app' }, [
                 [H1, _, ['Count them beans!']],
+                [Button, { on: { click: spawn } }, ['spawn counter']],
                 [Div, _, mapObject(cluster, ({ total, emitting }, key) => 
                     [CounterView, <GCounterWorker>{ key, total, emitting }]
                 )]

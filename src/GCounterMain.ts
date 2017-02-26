@@ -115,7 +115,7 @@ function notify (key: string, value: number) {
 
 // setup a new GCounter worker, and proxy its messages to the worker bus
 // it will be added to the cluster when a 'created' message is received
-function spawn (): Worker {
+export function spawn (): Worker {
     const worker = new Worker("js/GCounterWorker.js")
     worker.onmessage = (e: MessageEvent) => {
         const message: Message = e.data
