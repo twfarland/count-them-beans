@@ -16,7 +16,8 @@
   },
   "scripts": {
     "dev": "webpack --watch -d",
-    "build": "webpack -p"
+    "build": "webpack -p",
+    "serve": "cd public; python -m SimpleHTTPServer"
   },
   "main": "index.js",
   "license": "MIT"

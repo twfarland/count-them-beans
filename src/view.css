@@ -1,7 +1,45 @@
 .app {
-    font-family: Arial;
+    font-family: "Helvetica Neue", Arial;
+    padding: 20px;
+    text-align: center;
 }
 
-.counter * {
+.app h1 {
+    font-size: 2em;
+    font-weight: 300;
+    padding-bottom: 30px;
+}
+
+.app a {
+    text-decoration: none;
+    color: #0000FF;
+}
+
+.app button {
+    padding: 10px 15px;
+    font-size: 1em;
+    background: #fff;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0px 1px 4px rgba(0,0,0,0.5);
+    color: #666;
+}
+
+.counter {
     display: inline-block;
+    padding: 10px;
+    margin: 10px;
+    width: 50px;
+}
+
+.total {
+    text-align: center;
+    padding: 10px;
+    font-size: 1em;
+    transition: font-size 0.3s ease;
+    height: 30px;
+}
+
+.emitting .total {
+    font-size: 1.5em;
 }
