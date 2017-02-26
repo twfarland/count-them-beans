@@ -1,0 +1,7 @@
+.app {
+    font-family: Arial;
+}
+
+.counter * {
+    display: inline-block;
+}

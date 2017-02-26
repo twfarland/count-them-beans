@@ -1,0 +1,23 @@
+{
+  "name": "count-them-beans",
+  "version": "0.0.1",
+  "description": "demo showcasing g-counter CRDT and web workers",
+  "author": "Tim Farland <twfarland@gmail.com>",
+  "devDependencies": {
+    "css-loader": "^0.26.0",
+    "style-loader": "^0.13.1",
+    "ts-loader": "^1.2.2",
+    "typescript": "^2.1.4"
+  },
+  "dependencies": {
+    "@types/es6-promise": "0.0.32",
+    "acto": "https://github.com/twfarland/acto",
+    "sprezzatura": "https://github.com/twfarland/sprezzatura"
+  },
+  "scripts": {
+    "dev": "webpack --watch -d",
+    "build": "webpack -p"
+  },
+  "main": "index.js",
+  "license": "MIT"
+}
