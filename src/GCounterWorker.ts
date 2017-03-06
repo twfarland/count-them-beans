@@ -1,4 +1,4 @@
-import { GCounter, create, query, increment, update } from './GCounter'
+import { GCounter, create, query, increment, merge } from './GCounter'
 import { Message } from './GCounterMessages'
 
 declare function postMessage(message: Message)
@@ -8,8 +8,7 @@ const gCounter: GCounter = create()
 
 postMessage({ 
     command: 'created', 
-    key: gCounter.key,
-    value: query(gCounter)
+    gc: gCounter
 })
 
 // every 1-5 seconds, notify main of the current value
@@ -21,8 +20,7 @@ function randomNotify () {
     setTimeout(() => {
         postMessage({ 
             command: 'notify', 
-            key: gCounter.key, 
-            value: query(gCounter) 
+            gc: gCounter
         })
         randomNotify()
     }, randomInt(1, 5) * 1000)
@@ -30,14 +28,6 @@ function randomNotify () {
 
 randomNotify()
 
-// post value back
-function updated () {
-    postMessage({
-        command: 'updated', 
-        key: gCounter.key, 
-        value: query(gCounter) 
-    }) 
-}
 
 // respond to incoming messages
 onmessage = (e: MessageEvent) => {
@@ -46,13 +36,19 @@ onmessage = (e: MessageEvent) => {
 
     switch (message.command) {
         
-        case 'increment':
+        case 'increment': // increment here and return incremented to main
             increment(gCounter, gCounter.key, 1)
-            updated()
+            postMessage({
+                command: 'incremented', 
+                gc: gCounter
+            }) 
             break
 
-        case 'update': // this could also be done with merge()
-            update(gCounter, message.key, message.value)
-            updated()
+        case 'merge': // merge here and return merged to main
+            gCounter.state = merge(gCounter, message.gc).state
+            postMessage({
+                command: 'merged', 
+                gc: gCounter
+            }) 
     }
 }
