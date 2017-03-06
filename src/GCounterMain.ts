@@ -1,6 +1,6 @@
-import { GCounter } from './GCounter'
+import { GCounter, merge } from './GCounter'
 import { Message } from './GCounterMessages'
-import { Signal, create, listen, send, fold, map, merge } from 'acto'
+import { Signal, create, listen, send, fold, map } from 'acto'
 import { set, firstKey } from './utils'
 import { fromKeys, KeyCode } from './keyboard'
 
@@ -14,9 +14,9 @@ function toIncrementor (code: KeyCode): Message {
     return workerKey ? { command: 'increment', key: workerKey } : { command: 'none' }
 }
 
-function UIListener (message) { 
+function UIListener (message) {
     const cluster = state.value
-    switch (message.command) {
+    switch (message.command) { // Increment is the only message we receive from the UI
         case 'increment':
             cluster[message.key].worker.postMessage(message)
             break
@@ -36,32 +36,41 @@ listen(inputBus, UIListener)
 function reducer (message: Message, state: GCounterCluster): GCounterCluster {
 
     switch (message.command) {
-
-        case 'created':
-            index++ // side effects
+        
+        case 'created': // <-, sidefx
+            index++
             return set(state, {
-                [message.key]: {
-                    worker: message.worker,
+                [message.gc.key]: <GCounterWorker>{
                     index,
-                    total: 0,
+                    worker: message.worker,
+                    gc: message.gc,
                     emitting: false
                 }
             })
 
-        case 'updated':
+        case 'increment': // ->
+            incrementWorker(message.key)
+            return state
+
+        case 'incremented': // <-
             return set(state, {
-                [message.key]: set(state[message.key], { total: message.value })
+                [message.gc.key]: set(state[message.gc.key], {
+                    gc: merge(state[message.gc.key].gc, message.gc)
+                })
             })
 
-        case 'notify':
-            notify(message.key, message.value) // side effects
+        case 'notify': // ->, sidefx
+            notifyWorkers(message.gc)
             return set(state, {
-                [message.key]: set(state[message.key], { emitting: true })
+                [message.gc.key]: set(state[message.gc.key], { emitting: true })
             }) 
 
-        case 'notified':
+        case 'merged': // <-
             return set(state, {
-                [message.key]: set(state[message.key], { emitting: false })
+                [message.gc.key]: set(state[message.gc.key], {
+                    gc: merge(state[message.gc.key].gc, message.gc), 
+                    emitting: false 
+                })
             })
 
         default: 
@@ -74,10 +83,9 @@ function reducer (message: Message, state: GCounterCluster): GCounterCluster {
 var index = 0
 
 export interface GCounterWorker {
-    key?: string;
     index: number;
     worker: Worker;
-    total: number;
+    gc: GCounter;
     emitting: boolean;
 }
 
@@ -97,18 +105,20 @@ export function increment (key: string): void {
     send<Message>(inputBus, { command: 'increment', key })
 }
 
-// send the node value to any other nodes
-function notify (key: string, value: number) {
+// send increment command to worker
+function incrementWorker (key: string) {
+    const cluster = state.value
+    cluster[key].worker.postMessage(<Message>{ command: 'increment', key })
+}
+
+// send the node value to any other workers
+function notifyWorkers (gc: GCounter) {
 
     const cluster = state.value
 
     for (let _key in cluster) {
-        if (_key !== key) {
-            cluster[_key].worker.postMessage({ command: 'update', key, value })
-            setTimeout(() => 
-                send<Message>(workerBus, { command: 'notified', key: _key }), 
-                100
-            )
+        if (_key !== gc.key) {
+            cluster[_key].worker.postMessage(<Message>{ command: 'merge', gc })
         }
     }
 }

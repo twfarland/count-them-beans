@@ -26,8 +26,11 @@ export function increment (g: GCounter, key: string, delta: number = 1): void {
     if (delta < 0) {
         throw new Error("Can't decrement a GCounter")
     }
-    const current = query(g)
-    g.state[key] = current + delta
+    if (typeof g.state[key] !== 'undefined') {
+        g.state[key] += delta
+    } else {
+        g.state[key] = delta
+    }
 }
 
 // Sets value of counter, as tracked by node
@@ -35,23 +38,22 @@ export function update (g: GCounter, key: string, val: number) {
     g.state[key] = val
 }
 
-// Gets max
+// Gets sum
 export function query (g: GCounter): number {
-    const values = []
+    let value = 0
     for (let key in g.state) {
-        values.push(g.state[key])
+        value += g.state[key]
     }
-    return Math.max.apply(null, values)
+    return value
 }
 
 // Merge with another GCounter and return the merged copy.
 // It should be commutative, associative, and idempotent.
-// The merged GCounter is not, because the id is randomly generated,
-// but the state of the merged GCounter has those properties.
+// It keeps the same key as the first.
 export function merge (g1: GCounter, g2: GCounter): GCounter {
 
     const keys = {}
-    const g3 = create()
+    const g3 = { key: String(g1.key), state: {} }
 
     // get union of keys
     for (let key in g1.state) { keys[key] = true }
