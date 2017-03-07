@@ -22,6 +22,12 @@ function randomNotify () {
             command: 'notify', 
             gc: gCounter
         })
+        setTimeout(() => {
+            postMessage({
+                command: 'notified',
+                gc: gCounter
+            })
+        }, 200)
         randomNotify()
     }, randomInt(1, 5) * 1000)
 }
@@ -49,6 +55,6 @@ onmessage = (e: MessageEvent) => {
             postMessage({
                 command: 'merged', 
                 gc: gCounter
-            }) 
+            })
     }
 }
