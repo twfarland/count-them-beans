@@ -26,6 +26,11 @@ export interface Notify { // <- random notification of value
     gc: GCounter;
 }
 
+export interface Notified { // <-
+    command: 'notified';
+    gc: GCounter;
+}
+
 export interface Merge { // -> merge gc into gcTarget in a specific worker
     command: 'merge';
     gc: GCounter;
@@ -42,5 +47,6 @@ export type Message
     | Increment // ->
     | Incremented // <-
     | Notify // <-
+    | Notified
     | Merge // ->
     | Merged // <-

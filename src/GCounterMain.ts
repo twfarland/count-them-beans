@@ -63,13 +63,17 @@ function reducer (message: Message, state: GCounterCluster): GCounterCluster {
             notifyWorkers(message.gc)
             return set(state, {
                 [message.gc.key]: set(state[message.gc.key], { emitting: true })
+            })
+
+        case 'notified': // <-
+            return set(state, {
+                [message.gc.key]: set(state[message.gc.key], { emitting: false })
             }) 
 
         case 'merged': // <-
             return set(state, {
                 [message.gc.key]: set(state[message.gc.key], {
-                    gc: merge(state[message.gc.key].gc, message.gc), 
-                    emitting: false 
+                    gc: merge(state[message.gc.key].gc, message.gc)
                 })
             })
 
